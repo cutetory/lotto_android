@@ -7,6 +7,7 @@ import android.widget.Button
 import android.widget.NumberPicker
 import android.widget.TextView
 import android.widget.Toast
+import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 
 class MainActivity : AppCompatActivity() {
@@ -54,9 +55,20 @@ class MainActivity : AppCompatActivity() {
         initClearButton()
     }
 
+    /* 여기서부터는 함수*/
+//람다식 매개변수 화살표
     private fun initRunButton() {
         runButton.setOnClickListener {
             val list = getRandomNumber()
+            didRun = true
+
+            list.forEachIndexed{index, number ->
+                val textView = numberTextViewList[index]
+                textView.text = number.toString()
+                textView.isVisible = true
+
+                setNumberBackground(number, textView)
+            }
             Log.d("MainActivity", list.toString())
         }
     }//End of initRunButton()
@@ -78,13 +90,36 @@ class MainActivity : AppCompatActivity() {
                 return@setOnClickListener
             }
 
+            //kotlin이므로 setbackground이런건 생략 가능
             val textView = numberTextViewList[pickNumberSet.size]
             textView.isVisible = true
             textView.text = numberPicker.value.toString()
+
+            //drawable을 가져오는 것이므로 Context에서 가져오는 것
+/*            when(numberPicker.value){
+                in 1..10 -> textView.background = ContextCompat.getDrawable(this, R.drawable.circle_yellow)
+                in 11..20 -> textView.background = ContextCompat.getDrawable(this, R.drawable.circle_blue)
+                in 21..30 -> textView.background = ContextCompat.getDrawable(this, R.drawable.circle_red)
+                in 31..40 -> textView.background = ContextCompat.getDrawable(this, R.drawable.circle_gray)
+                else -> textView.background = ContextCompat.getDrawable(this, R.drawable.circle_green)
+
+            }*/
+            setNumberBackground(numberPicker.value, textView)
             pickNumberSet.add(numberPicker.value)
 
         }
     }// End of initAddButton()
+
+    //중복되는 코드 없애기 위함.
+    private fun setNumberBackground(number:Int, textView: TextView){
+        when(number){
+            in 1..10 -> textView.background = ContextCompat.getDrawable(this, R.drawable.circle_yellow)
+            in 11..20 -> textView.background = ContextCompat.getDrawable(this, R.drawable.circle_blue)
+            in 21..30 -> textView.background = ContextCompat.getDrawable(this, R.drawable.circle_red)
+            in 31..40 -> textView.background = ContextCompat.getDrawable(this, R.drawable.circle_gray)
+            else -> textView.background = ContextCompat.getDrawable(this, R.drawable.circle_green)
+        }
+    }
 
     private fun initClearButton(){
         clearButton.setOnClickListener{
@@ -94,7 +129,7 @@ class MainActivity : AppCompatActivity() {
             }
             didRun = false
         }
-    }
+    }// End of initClearButton()
 
     private fun getRandomNumber(): List<Int> {
         val numberList = mutableListOf<Int>().apply {
